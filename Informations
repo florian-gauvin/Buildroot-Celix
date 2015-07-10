@@ -1,0 +1,25 @@
+buildroot : Image with Celix
+
+Follow instruction on this site : https://blog.docker.com/2013/06/create-light-weight-docker-containers-buildroot/
+But I adapted it for celix instead of postgres in the celix.mk and Config.in file.
+
+Change in buildroot menuconfig :
+Target Options :
+	Target Architecture : x86_64 
+	Target Architecture Variant : atom
+Toolchain : 
+	C library : glibc
+	Enable c++ support : Y
+Target Packages :
+	Libraries :
+		JSON/XML:
+			jansson : Y
+			libxml2 : Y
+celix : Y
+
+In ~/Documents/buildroot-With-Celix/package/celix/celix.mk,
+AUtorise buildroot to install celix on the target : CELIX_INSTALL_TARGET = YES
+Disable APR dependencies with : -DWITH_APR=OFF in CELIX_CONF_OPTS
+Add -DCMAKE_EXE_LINKER_FLAGS="-ldl -lpthread" in CELIX_CONF_OPTS to avoid linking error with pthread and ld
+Add dependencies to : libcurl, zlib, e2fsprogs in : CELIX_DEPENDENCIES
+WARNING, for e2fsprogs : change disable to enable for uuid, libuuid and libblkid in ~/Documents/buildroot-With-Celix/package/ef2progs/ef2progs.mk
