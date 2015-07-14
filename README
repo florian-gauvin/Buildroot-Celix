@@ -1,23 +1,75 @@
-Buildroot is a simple, efficient and easy-to-use tool to generate embedded
-Linux systems through cross-compilation.
+Here are the steps that I have followed to have this pre-configured buildroot with a Celix package :
 
-The documentation can be found in docs/manual. You can generate a text
-document with 'make manual-text' and read output/docs/manual/manual.text.
-Online documentation can be found at http://buildroot.org/docs.html
+1.If docker is already installed on your pc go to the next steps, other go to this website : https://docs.docker.com/userguide/, click on the install tab, choose your distribution and follow the steps.
+2.Download buildroot on this page : http://buildroot.uclibc.org/download.html
+3.Extract Buildroot where you want, named it buildroot
+4.Create a new package "celix" for buildroot :
+    a.create a directory named celix in : /buildroot/package
+    b.create a makefile named celix.mk with gedit filled with the following lines : 
+    
+#############################################################
+#
+# CELIX
+#
+#############################################################
+CELIX_VERSION = Latest 
+CELIX_SOURCE = develop.tar.gz 
+CELIX_SITE = https://github.com/apache/celix/archive/
+CELIX_INSTALL_STAGING = YES
+CELIX_INSTALL_TARGET = YES
+CELIX_CONF_OPTS = -DWITH_APR=OFF -DCMAKE_EXE_LINKER_FLAGS="-ldl -lpthread" -DBUILD_DEPLOYMENT_ADMIN=ON -DBUILD_SHELL=ON -DBUILD_SHELL_TUI=ON -DBUILD_REMOTE_SHELL=ON
+CELIX_DEPENDENCIES = libcurl zlib e2fsprogs
 
-To build and use the buildroot stuff, do the following:
+$(eval $(cmake-package))
 
-1) run 'make menuconfig'
-2) select the target architecture and the packages you wish to compile
-3) run 'make'
-4) wait while it compiles
-5) find the kernel, bootloader, root filesystem, etc. in output/images
+    This makefile is based on an exemple find in the buildroot user manual (Part III, section 17.6 : Infrastructure for CMake-based packages).
+    CELIX_VERSION define the version of celix
+    CELIX_SOURCE define the name of the tarball
+    CELIX_SITE define the site on which the tarball can be download
+    CELIX_INSTALL_STAGING = YES : we tell Buildroot to install the package to the staging directory
+    CELIX_INSTALL_TARGET = YES : we tell buildroot to install celix on the target
+    CELIX_CONF_OPTS  =  -DWRITH_APR=OFF -DCMAKE_EXE_LINKER_FLAGS="-ldl -lpthread" -DBUILD_DEPLOYMENT_ADMIN=ON -DBUILD_SHELL=ON -DBUILD_SHELL_TUI=ON -DBUILD_REMOTE_SHELL=ON : In order : We tell buildroot that there no need of the APR library for celix, that the CMAKE file has to make a link for the ldl and lpthread libraries, and that we want the bundles DEPLOYMENT_ADMIN, SHELL, SHELL_TUI and REMOTE_SHELL for celix.
+    CELIX_DEPENDENCIES = libcurl zlib e2fsprogs : define the dependencies that celix needs
+    $(eval $(cmake-package)) : tells buildroot that celix can be build with cmake
+    You can change the version, the source and the site if you want. Moreover, you can change the "-DWRITH_APR" variable to YES but you must add "apr" in the dependencies if you do so.
+    
+    c.save this makefile in buildroot/package/celix
+    d.create the config file named Config.in with gedit filled with the following lines :
+    
+config BR2_PACKAGE_CELIX
+    bool "celix"
+    help
+      Celix server
+      
+    e.Save this file in buildroot/package/celix
+  5.Add this package in the menuconfig of buildroot
+  In the buildroot directory enter the following command : echo 'source "package/celix/Config.in"' >> Config.in
+  6.Run menuconfig
+  In the buildroot directory enter the following command :make menuconfig
+  7.Select the different options : (This are the options that I have chosen for the INAETICS project but you can choose others target architecture, c library or target packages but you have to enable celix in the main menu)
+      Target Options :
+                      Target Architecture : x86_64
+                      Target Architecture Variant : atom
+      Toolchain :
+                      C library : glibc
+                      Enable c++ support : Y
+      Target Packages :
+                      Libraries :
+                                JSON/XML:
+                                        jansson : Y
+                                        libxml2 : Y
+                                Networking:
+                                        libcurl:Y
+                                        curl binary : y
+        celix : Y
 
-You do not need to be root to build or run buildroot.  Have fun!
-
-Buildroot comes with a basic configuration for a number of boards. Run
-'make list-defconfigs' to view the list of provided configurations.
-
-Please feed suggestions, bug reports, insults, and bribes back to the
-buildroot mailing list: buildroot@buildroot.org
-You can also find us on #buildroot on Freenode IRC.
+  8.exit the menuconfig and save the configuration
+  9.Launch the build :
+  In the buildroot directory enter the following command : make
+  10.When the build is finished :
+  Import the built image of celix in docker :
+  Go to the following directory : buildroot/output/images
+  Enter the following command : docker import - name < rootfs.tar
+  11.It's done you have your Docker image with Celix.
+  You can test it by running the following command : docker run -ti name /bin/sh
+  12.You should have a docker image that weight less than 20MB.
