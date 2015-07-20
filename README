@@ -44,9 +44,11 @@ config BR2_PACKAGE_CELIX
     e.Save this file in buildroot/package/celix
   5.Add this package in the menuconfig of buildroot
   In the buildroot directory enter the following command : echo 'source "package/celix/Config.in"' >> Config.in
-  6.Run menuconfig
+  6.If you want to use dockerfile to build Celix automatically, In buildroot/package/fakeroot/fakeroot.mk, add the following line :
+    HOST_FAKEROOT_CONF_OPTS = --with-ipc=tcp
+  7.Run menuconfig
   In the buildroot directory enter the following command :make menuconfig
-  7.Select the different options : (This are the options that I have chosen for the INAETICS project but you can choose others target architecture, c library or target packages but you have to enable celix in the main menu)
+  8.Select the different options : (This are the options that I have chosen for the INAETICS project but you can choose others target architecture, c library or target packages but you have to enable celix in the main menu)
       Target Options :
                       Target Architecture : x86_64
                       Target Architecture Variant : atom
@@ -63,13 +65,13 @@ config BR2_PACKAGE_CELIX
                                         curl binary : y
         celix : Y
 
-  8.exit the menuconfig and save the configuration
-  9.Launch the build :
+  9.exit the menuconfig and save the configuration
+  10.Launch the build :
   In the buildroot directory enter the following command : make
-  10.When the build is finished :
+  11.When the build is finished :
   Import the built image of celix in docker :
   Go to the following directory : buildroot/output/images
   Enter the following command : docker import - name < rootfs.tar
-  11.It's done you have your Docker image with Celix.
+  12.It's done you have your Docker image with Celix.
   You can test it by running the following command : docker run -ti name /bin/sh
-  12.You should have a docker image that weight less than 20MB.
+  13.You should have a docker image that weight less than 20MB.
