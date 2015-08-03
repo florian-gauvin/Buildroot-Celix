@@ -1,3 +1,11 @@
+Here is a full pre-configured Buildroot environment that will create a tar file with Celix and all that Celix need in it.
+
+If you want to create a Docker Image with this :
+When the build is finished :
+  Import the built image of celix in docker :
+  Go to the following directory : buildroot/output/images
+  Enter the following command : docker import - name < rootfs.tar
+
 Here are the steps that I have followed to have this pre-configured buildroot with a Celix package :
 
 1.If docker is already installed on your pc go to the next steps, other go to this website : https://docs.docker.com/userguide/, click on the install tab, choose your distribution and follow the steps.
@@ -66,12 +74,3 @@ config BR2_PACKAGE_CELIX
         celix : Y
 
   9.exit the menuconfig and save the configuration
-  10.Launch the build :
-  In the buildroot directory enter the following command : make
-  11.When the build is finished :
-  Import the built image of celix in docker :
-  Go to the following directory : buildroot/output/images
-  Enter the following command : docker import - name < rootfs.tar
-  12.It's done you have your Docker image with Celix.
-  You can test it by running the following command : docker run -ti name /bin/sh
-  13.You should have a docker image that weight less than 20MB.
