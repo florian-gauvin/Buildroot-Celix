@@ -6,6 +6,7 @@ When the build is finished :
   Import the built image of celix in docker :
   Go to the following directory : buildroot/output/images
   Enter the following command : docker import - name < rootfs.tar
+  You will have a docker image that is fewer than 20 MB.
 
 Here are the steps that I have followed to have this pre-configured buildroot with a Celix package :
 
