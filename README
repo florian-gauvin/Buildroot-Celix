@@ -11,8 +11,11 @@ When the build is finished :
 Here are the steps that I have followed to have this pre-configured buildroot with a Celix package :
 
 1.If docker is already installed on your pc go to the next steps, other go to this website : https://docs.docker.com/userguide/, click on the install tab, choose your distribution and follow the steps.
+
 2.Download buildroot on this page : http://buildroot.uclibc.org/download.html
+
 3.Extract Buildroot where you want, named it buildroot
+
 4.Create a new package "celix" for buildroot :
     a.create a directory named celix in : /buildroot/package
     b.create a makefile named celix.mk with gedit filled with the following lines : 
@@ -52,12 +55,16 @@ config BR2_PACKAGE_CELIX
       Celix server
       
     e.Save this file in buildroot/package/celix
+    
   5.Add this package in the menuconfig of buildroot
   In the buildroot directory enter the following command : echo 'source "package/celix/Config.in"' >> Config.in
+  
   6.If you want to use dockerfile to build Celix automatically, In buildroot/package/fakeroot/fakeroot.mk, add the following line :
     HOST_FAKEROOT_CONF_OPTS = --with-ipc=tcp
+    
   7.Run menuconfig
   In the buildroot directory enter the following command :make menuconfig
+  
   8.Select the different options : (This are the options that I have chosen for the INAETICS project but you can choose others target architecture, c library or target packages but you have to enable celix in the main menu)
       Target Options :
                       Target Architecture : x86_64
