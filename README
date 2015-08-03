@@ -1,4 +1,5 @@
 Here is a full pre-configured Buildroot environment that will create a tar file with Celix and all that Celix need in it.
+You just need to run the command "make" in the buildroot directory to launch the build.
 
 If you want to create a Docker Image with this :
 When the build is finished :
